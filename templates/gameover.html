@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- HTML code goes in here -->
+<!-- HTML code goes in here
 <center>
    <h1>
   Your score was
@@ -13,7 +13,23 @@
   <input type="submit" value="New Game">
 </form>
   
-</center>
+</center> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Over</title>
+</head>
+<body>
+    <h1>Game Over</h1>
+    <p>Your final score is: {{ score }}</p>
+    <a href="/">Play Again</a>
+</body>
+</html>
+
 
 
 

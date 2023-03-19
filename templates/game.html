@@ -1,71 +1,59 @@
-{% extends "base.html" %}
-{% block content %}
-<!-- HTML code goes in here -->
-<head>
-  <style>
-    #countdown {
-      font-size: 18px;
-      font-weight: normal;
-    }
-    /* #score {
-      font-size: 12px;
-      font-weight: bold;
-    }
-    #life {
-      font-size: 12px;
-      font-weight: bold;
-    } */
-    #word {
-      font-size: 32px;
-      font-weight: bold;
-    }
-    #p {
-      font-size: 20px;
-      font-weight: normal;}
-  </style>
-</head>
-<center>
-   <h1>
-   Is This Word New or Have You Seen It?
-   <body>
-    <div id="countdown">60</div>
+<script>
+  let timeLeft = 60;
+  const countdownDisplay = document.getElementById('countdown');
+  const seenBtn = document.getElementById('seenBtn');
+  const newBtn = document.getElementById('newBtn');
+  const wordDisplay = document.getElementById('word');
+  const scoreDisplay = document.getElementById('score');
 
-    <script>
-       let timeLeft = 60;
-      const countdownDisplay = document.getElementById('countdown');
-    
-      function updateCountdown() {
-        timeLeft -= 1;
-        countdownDisplay.textContent = timeLeft;
-        // if (timeLeft <= 10) {
-        //   document.getElementById("countdown").style.color = "red";
-        // }
-        if (timeLeft <= 0) {
-          window.location.href = "/gameover";
-        }
-        let timeOut = 60 - timeLeft;
+  function updateCountdown() {
+      timeLeft -= 1;
+      countdownDisplay.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+          window.location.href = `/gameover?score=${scoreDisplay.textContent}`;
       }
-      setInterval(updateCountdown, 1000);
-    </script>
+  }
 
-  </body>
-  </h1>
+  setInterval(updateCountdown, 1000);
 
-<p id = "p">
-  Score:{{session['score']}}  Lives: {{session['life']}}
-</p>
-    
-  <div id="word">
-    {{session['word']}}
-  </div>
-<br>
+  seenBtn.addEventListener('click', () => {
+      fetch('/seen', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({action: 'seen'})
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.gameover) {
+              window.location.href = `/gameover?score=${data.score}`;
+          } else {
+              wordDisplay.textContent = data.word;
+              scoreDisplay.textContent = data.score;
+          }
+      });
+  });
 
-<form action="seen" method="get">
-  <input type="submit" value="Word Seen">
-</form>
-
-<form action="new" method="get">
-  <input type="submit" value="Word New">
-</center>
-
-{% endblock %}
+  newBtn.addEventListener('click', () => {
+      fetch('/new', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({action: 'new'})
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.gameover) {
+              window.location.href = `/gameover?score=${data.score}`;
+          } else {
+              wordDisplay.textContent = data.word;
+              scoreDisplay.textContent = data.score;
+          }
+      });
+  });
+</script>
+</body>
+</html>
