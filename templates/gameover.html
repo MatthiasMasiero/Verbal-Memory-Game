@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- HTML code goes in here -->
+<center>
+   <h1>
+  Your score was
+  <br>
+  {{session['score']}}!
+  </h1>
+
+    <br>
+<form action="newgame" method="get">
+  <input type="submit" value="New Game">
+</form>
+  
+</center>
+
+
+
+{% endblock %}
