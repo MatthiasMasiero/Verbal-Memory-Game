@@ -4,7 +4,7 @@ import random
 app = Flask(__name__)
 app.secret_key = 'BAD_SECRET_KEY'
 
-newWords = ['each', 'every', 'doctor', 'patient', 'hospital', 'medicine', 'surgery', 'nurse', 'health', 'how', 'bowl', 'butter', 'butterfly', 'butterflies', 'integer', 'hour', 'time', 'second', 'minute']
+newWords = ['each', 'every', 'doctor', 'patient', 'hospital', 'medicine', 'surgery', 'nurse', 'health', 'how', 'bowl', 'butter', 'butterfly', 'butterflies', 'integer', 'hour', 'time', 'second', 'minute', 'tangent', 'step', 'stepchild', 'ambient', 'light', 'dark', 'smart', 'out', 'call', 'phone', 'telephone', 'computer', 'mouse', 'keyboard', 'monitor', 'screen', 'laptop', 'tablet', 'smartphone', 'corn', 'cloud', 'apple', 'short', 'pizza', 'rat']
 seenWords = []
 score = [0]
 
