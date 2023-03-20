@@ -20,7 +20,8 @@ def start():
     session['life'] = 3
     session['word'] = random.choice(newWords)
     session['score'] = 0
-    return render_template("game.html", word=session['word'], score=session['score'])
+    time_left = 60
+    return render_template("game.html", word=session['word'], score=session['score'], time_left=time_left)
    else:
     return render_template("index.html")
 

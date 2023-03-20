@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {% extends "base.html" %}
 {% block content %}
 <!-- time test -->
@@ -23,29 +24,59 @@
       font-size: 20px;
       font-weight: normal;}
   </style>
+  <script src="countdown.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <center>
    <h1>
    Is This Word New or Have You Seen It?
    <body>
-    <div id="countdown">60</div>
+    <p>Time left: <span id='countdown'></span> seconds</p>
 
     <script>
-       let timeLeft = 60;
+      var initialTimeLeft = 60;
+      let timeLeft = initialTimeLeft;
       const countdownDisplay = document.getElementById('countdown');
-    
+      countdownDisplay.textContent = timeLeft;
+  
       function updateCountdown() {
         timeLeft -= 1;
         countdownDisplay.textContent = timeLeft;
-        // if (timeLeft <= 10) {
-        //   document.getElementById("countdown").style.color = "red";
-        // }
         if (timeLeft <= 0) {
           window.location.href = "/gameover";
         }
-        let timeOut = 60 - timeLeft;
+        localStorage.setItem('timeLeft', timeLeft);
       }
+  
       setInterval(updateCountdown, 1000);
+    </script>
+
+    <script>
+      $(document).ready(function() {
+        function updateContent(response) {
+          $('#word').text(response.word);
+          $('#p').text('Score:' + response.score + '  Lives:' + response.life);
+        }
+
+        function submitForm(e, formId) {
+          e.preventDefault();
+          $.ajax({
+            type: 'GET',
+            url: $(formId).attr('action'),
+            success: function(response) {
+              updateContent(response);
+            },
+          });
+        }
+
+        $('#seen-form').on('submit', function(e) {
+          submitForm(e, '#seen-form');
+        });
+
+        $('#new-form').on('submit', function(e) {
+          submitForm(e, '#new-form');
+        });
+      });
     </script>
 
   </body>
@@ -60,12 +91,21 @@
   </div>
 <br>
 
-<form action="seen" method="get">
+<!-- <form action="seen" method="get">
   <input type="submit" value="Word Seen">
 </form>
 
 <form action="new" method="get">
-  <input type="submit" value="Word New">
+  <input type="submit" value="Word New"> -->
+
+  <form id="seen-form" action="seen" method="get">
+    <input type="submit" value="Word Seen">
+  </form>
+  
+  <form id="new-form" action="new" method="get">
+    <input type="submit" value="Word New">
+  </form>
+  
 </center>
 
 {% endblock %}

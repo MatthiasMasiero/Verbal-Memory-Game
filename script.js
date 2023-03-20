@@ -1,0 +1,1 @@
+var initialTimeLeft = 60;
