@@ -28,20 +28,25 @@ def start():
     session['life'] = 3
     session['word'] = random.choice(newWords)
     session['score'] = 0
-    if session['timer_started'] == False:
-      session['timer_started'] = True
-      session['game_over'] = False
-      timer_thread = threading.Thread(target=timer_function)
-      timer_thread.start()
+    session['game_start_time'] = time.time()  # Store the start time
+    session['game_over'] = False
+    timer_thread = threading.Thread(target=timer_function)
+    timer_thread.start()
     return render_template("game.html", word=session['word'], score=session['score'])
    else:
     return render_template("index.html")
 
+def check_time_elapsed():
+    time_elapsed = time.time() - session['game_start_time']
+    if time_elapsed >= 60:
+        session['game_over'] = True
+        return True
+    return False
    
 @app.route('/seen', methods=["GET", "POST"])
 def seen():
   request.method == "POST"
-  if session['game_over'] == True:
+  if check_time_elapsed() or session['game_over']:
     return render_template("gameover.html", score=session['score'])
   else:
     if session['word'] in seenWords:
@@ -62,7 +67,7 @@ def seen():
 @app.route('/new', methods=["GET", "POST"])
 def new():
   request.method == "POST"
-  if session['game_over'] == True:
+  if check_time_elapsed() or session['game_over']:
     return render_template("gameover.html", score=session['score'])
   else:
     if session['word'] in seenWords:
