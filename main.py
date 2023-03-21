@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, session
 import random
+import time
+import threading
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'BAD_SECRET_KEY'
@@ -8,8 +11,13 @@ newWords = ['each', 'every', 'doctor', 'patient', 'hospital', 'medicine', 'surge
 seenWords = []
 score = [0]
 
+def timer_function():
+    time.sleep(60)
+    session['timer_started'] = True
+
 @app.route('/')
 def index():
+  session['timer_started'] = False
   return render_template("index.html")
 
 @app.route('/start', methods=["GET", "POST"])
@@ -20,6 +28,11 @@ def start():
     session['life'] = 3
     session['word'] = random.choice(newWords)
     session['score'] = 0
+    if session['timer_started'] == False:
+      session['timer_started'] = True
+      session['game_over'] = False
+      timer_thread = threading.Thread(target=timer_function)
+      timer_thread.start()
     return render_template("game.html", word=session['word'], score=session['score'])
    else:
     return render_template("index.html")
@@ -28,38 +41,44 @@ def start():
 @app.route('/seen', methods=["GET", "POST"])
 def seen():
   request.method == "POST"
-  if session['word'] in seenWords:
-    session['score'] = session['score'] + 1
-    session['word'] = random.choice(newWords)
-    return render_template("game.html", word=session['word'], score=session['score'])
+  if session['game_over'] == True:
+    return render_template("gameover.html", score=session['score'])
   else:
-    if session['life'] > 1:
-      session['life'] = session['life'] - 1
-      seenWords.append(session['word'])
+    if session['word'] in seenWords:
+      session['score'] = session['score'] + 1
       session['word'] = random.choice(newWords)
-      print("not in seen")
       return render_template("game.html", word=session['word'], score=session['score'])
     else:
-        return render_template("gameover.html", score=session['score'])
+      if session['life'] > 1:
+        session['life'] = session['life'] - 1
+        seenWords.append(session['word'])
+        session['word'] = random.choice(newWords)
+        print("not in seen")
+        return render_template("game.html", word=session['word'], score=session['score'])
+      else:
+          return render_template("gameover.html", score=session['score'])
 
 
 @app.route('/new', methods=["GET", "POST"])
 def new():
   request.method == "POST"
-  if session['word'] in seenWords:
-    if session['life'] > 1:
-      session['life'] = session['life'] - 1
-      session['word'] = random.choice(newWords)
-      print("in seen")
-      return render_template("game.html", word=session['word'], score=session['score'])
-    else:
-        return render_template("gameover.html", score=session['score'])
+  if session['game_over'] == True:
+    return render_template("gameover.html", score=session['score'])
   else:
-    seenWords.append(session['word'])
-    session['score'] = session['score'] + 1
-    session['word'] = random.choice(newWords)
-    return render_template("game.html", word=session['word'], score=session['score'])
-  
+    if session['word'] in seenWords:
+      if session['life'] > 1:
+        session['life'] = session['life'] - 1
+        session['word'] = random.choice(newWords)
+        print("in seen")
+        return render_template("game.html", word=session['word'], score=session['score'])
+      else:
+          return render_template("gameover.html", score=session['score'])
+    else:
+      seenWords.append(session['word'])
+      session['score'] = session['score'] + 1
+      session['word'] = random.choice(newWords)
+      return render_template("game.html", word=session['word'], score=session['score'])
+    
 @app.route('/gameover', methods=["GET"])
 def gameover():
     return render_template("gameover.html", score=session['score'])
